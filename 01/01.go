@@ -36,7 +36,7 @@ func main() {
 		}
 	}
 
-	fmt.Println("Part 1", max)
+	fmt.Println("Part 1:", max)
 
 	// Sort the array and take the last 3 for part 2.
 	sort.Sort(sort.Reverse(sort.IntSlice(elves)))
@@ -46,5 +46,5 @@ func main() {
 	for _, element := range elves[:3] {
 		total += element
 	}
-	fmt.Println(elves[:3], total)
+	fmt.Println("Part 2:", total)
 }
