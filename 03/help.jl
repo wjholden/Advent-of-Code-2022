@@ -11,3 +11,5 @@ function priority(s)
 end
 using Pipe
 @pipe [priority.(intersect(Set(split(l[i], "")), Set(split(r[i], "")))) for i in 1:length(l)] |> sum
+# find strings with no intersection -- this was my bug in Go
+filter(isempty, intersect.(zip(Set.(split.(l, "")), Set.(split.(r, "")))))
