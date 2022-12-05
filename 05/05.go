@@ -47,7 +47,8 @@ func main() {
 	// Is this a shallow copy?
 	//copy(stacks2, stacks1)
 	for i := range stacks1 {
-		// Apparently it isn't!
+		// Apparently it is! Mutating the inner arrays in stacks2 would
+		// also cause changes in stacks1.
 		stacks2[i] = append(stacks2[i], stacks1[i]...)
 	}
 
