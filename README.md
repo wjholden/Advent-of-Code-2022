@@ -13,6 +13,7 @@ This year: Go!
 7. `**` n-ary trees, types (objects, structs) with supertype (interface) and polymorphism, tree traversal, subproblems, file systems, command-line interfaces, string parsing, pipelines (such as generator functions, goroutines, and iterators)
 8. `**` matrices/2D arrays, greedy algorithms, optimization (stopping early to not waste time), loops, extrema, refactoring
 9. `**` mutable structs vs pure functions, pointers, recursion,  sets, distance/direction (vectors), absolute values
+10. `**` string building, modular arithmetic, simple assembly languages, tricky off-by-one errors
 
 # Lessons Learned
 * Go is a really low-level language and does not provide batteries for things like `sum()` and `Set()`.
