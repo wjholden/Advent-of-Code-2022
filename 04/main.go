@@ -9,8 +9,17 @@ import (
 )
 
 func main() {
+	// read input from file
+	f, err := os.Open("input.txt")
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
 	// For variety, let's read from stdin instead of a file.
-	scanner := bufio.NewScanner(os.Stdin)
+	// (On second thought, this makes it harder to run them all in a batch.
+	// I changed this to the same file-oriented model in 2023).
+	// scanner := bufio.NewScanner(os.Stdin)
+	scanner := bufio.NewScanner(f)
 	lines := make([]string, 0)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())

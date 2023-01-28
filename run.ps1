@@ -1,0 +1,1 @@
+(1..25) | % { $d = "$_".PadLeft(2, "0"); if (Test-Path "$d/main.go") { write-host "$d" -ForegroundColor Yellow; go build -o "$d.exe" "$d/main.go"; cd "$d"; Invoke-Expression "../$d.exe"; cd - } }

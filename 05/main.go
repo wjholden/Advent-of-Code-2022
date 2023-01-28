@@ -11,7 +11,14 @@ import (
 
 func main() {
 	// read lines of input
-	scanner := bufio.NewScanner(os.Stdin)
+	//scanner := bufio.NewScanner(os.Stdin)
+	// read input from file
+	f, err := os.Open("input.txt")
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+	scanner := bufio.NewScanner(f)
 	lines := make([]string, 0)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
@@ -85,6 +92,7 @@ func main() {
 	for _, s2 := range stacks2 {
 		fmt.Print(s2[len(s2)-1])
 	}
+	fmt.Println()
 }
 
 func parseStacks(line string) []string {
