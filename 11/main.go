@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"regexp"
-	"sort"
 	"strconv"
 	"strings"
 )
@@ -18,8 +17,59 @@ type monkey struct {
 
 func main() {
 	monkeys := parse(puzzle)
+	divide3 := func(worry int) int { return worry / 3 }
+	inspections1 := keepaway(monkeys, 20, divide3)
+	part1_1, part1_2 := monkeybusiness(inspections1)
+	fmt.Println("Part 1:", part1_1*part1_2)
+
+	// re-read the input for part 2 because we mutated it
+	monkeys = parse(puzzle)
+	// This is my idea to keep numbers small: take the common modulo for
+	// all of the divisors. It's probably no coincidence that they're all
+	// prime and also all distinct. This might not work. (It works!)
+	commonMod := divisorsProduct(monkeys)
+	reduceByMod := func(worry int) int { return worry % commonMod }
+	inspections2 := keepaway(monkeys, 10000, reduceByMod)
+	part2_1, part2_2 := monkeybusiness(inspections2)
+	fmt.Println("Part 2:", part2_1*part2_2)
+}
+
+func divisorsProduct(monkeys []monkey) int {
+	p := 1
+	for _, m := range monkeys {
+		p *= m.div
+	}
+	return p
+}
+
+func monkeybusiness(inspections []int) (int, int) {
+	// find the top two elements in an array
+	max1 := -1
+	max2 := -2
+	for _, i := range inspections {
+		max2, i = max(max2, i), min(max2, i)
+		max1 = max(max1, i)
+	}
+	return max1, max2
+}
+
+func max(a, b int) int {
+	if a >= b {
+		return a
+	}
+	return b
+}
+
+func min(a, b int) int {
+	if a <= b {
+		return a
+	}
+	return b
+}
+
+func keepaway(monkeys []monkey, rounds int, reducer func(int) int) []int {
 	inspections := make([]int, len(monkeys))
-	for round := 0; round < 20; round++ {
+	for round := 0; round < rounds; round++ {
 		//fmt.Println("Round", round, monkeys)
 		for i := range monkeys {
 			// Why pointers? Because Go will pass by value, not reference.
@@ -29,7 +79,7 @@ func main() {
 			for _, oldWorry := range m.items {
 				inspections[i]++
 				newWorry := eval(m.op, oldWorry)
-				newWorry /= 3
+				newWorry = reducer(newWorry)
 				var dst *monkey
 				if newWorry%m.div == 0 {
 					dst = &monkeys[m.t]
@@ -41,8 +91,7 @@ func main() {
 			m.items = m.items[:0] // clear array
 		}
 	}
-	sort.Sort(sort.Reverse(sort.IntSlice(inspections)))
-	fmt.Println("Part 1:", inspections[0]*inspections[1])
+	return inspections
 }
 
 const pattern = `Monkey (?P<id>\d):
