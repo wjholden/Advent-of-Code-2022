@@ -75,7 +75,7 @@ func keepaway(monkeys []monkey, rounds int, reducer func(int) int) []int {
 			// Why pointers? Because Go will pass by value, not reference.
 			// So, you're getting a copy of the monkey object. If you make any
 			// changes to it, those won't propagate back to the original.
-			m := &monkeys[i]
+			var m *monkey = &monkeys[i]
 			for _, oldWorry := range m.items {
 				inspections[i]++
 				newWorry := eval(m.op, oldWorry)

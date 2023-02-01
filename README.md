@@ -14,6 +14,7 @@ This year: Go!
 8. `**` matrices/2D arrays, greedy algorithms, optimization (stopping early to not waste time), loops, extrema, refactoring
 9. `**` mutable structs vs pure functions, pointers, recursion,  sets, distance/direction (vectors), absolute values
 10. `**` string building, modular arithmetic, simple assembly languages, tricky off-by-one errors
+11. `**` big integers (unless you can avoid it, which you can!), coprimes, parsers, interpreters, procedural programming, non-parallelizable problems, pointers/mutable structs
 
 # Lessons Learned
 * Go is a really low-level language and does not provide batteries for things like `sum()` and `Set()`.
@@ -23,3 +24,15 @@ This year: Go!
 * Just like Java and JavaScript, `copy()` works fine on a 1D array but it isn't deep.
 * Go's object-orientation does not really accomodate control flow switched on types. In Java, you might have used the `instanceof` operator to downcast a variable to a more specific type. Go uses a `.` to test interface satisfiability, `type.(value)`, but I don't think you can downcast at all.
 * Goroutines are great! Go has the easiest concurrency model of any language that I have used.
+* You'd think the simple rule "values are always passed by value" would be easy to remember, but this can surprise you if you've come from languages (like Java and Python) that pass object **references**. If you want to mutate an object in a function (or even `for` loop), then you need pointers.
+* Fortunately, pointers are not terribly difficult in Go. The trickiest thing was getting the syntax just right for taking pointers to array members. Here is a working example:
+
+```
+var A []int = []int{1, 2, 3, 4}
+var x *int = &A[0]
+*x = 1234
+fmt.Println(A)
+```
+
+* You cannot get a pointer to a dictionary member.
+* `slice = slice[:0]` is a neat trick to clear the contents of a slice.
