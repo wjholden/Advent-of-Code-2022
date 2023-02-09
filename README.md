@@ -15,6 +15,7 @@ This year: Go!
 9. `**` mutable structs vs pure functions, pointers, recursion,  sets, distance/direction (vectors), absolute values
 10. `**` string building, modular arithmetic, simple assembly languages, tricky off-by-one errors
 11. `**` big integers (unless you can avoid it, which you can!), coprimes, parsers, interpreters, procedural programming, non-parallelizable problems, pointers/mutable structs
+12. `**` graph searching, Dijkstra's algorithm (maybe A* for part 1), passing functions as arguments, reductions, brute force is not the answer
 
 # Lessons Learned
 * Go is a really low-level language and does not provide batteries for things like `sum()` and `Set()`.
@@ -34,5 +35,10 @@ var x *int = &A[0]
 fmt.Println(A)
 ```
 
+* You also need pointers for fast code if you want to avoid lots of copying.
 * You cannot get a pointer to a dictionary member.
 * `slice = slice[:0]` is a neat trick to clear the contents of a slice.
+* You can deserialize arbitrary JSON to an `interface{}`. From there, you can use [type assertions](https://go.dev/tour/methods/15) which is loosly comparable to a [cast](https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html) but maybe more restrictive.
+* Go's `for` keyword replaces `while` and allows for some interesting syntax, including `for {}` with no condition.
+* Assignments are legal in an `if` clause.
+* Go's `panic` is very different from [`throw`/`catch`](https://docs.oracle.com/javase/tutorial/essential/exceptions/throwing.html).
