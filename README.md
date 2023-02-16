@@ -16,6 +16,7 @@ This year: Go!
 10. `**` string building, modular arithmetic, simple assembly languages, tricky off-by-one errors
 11. `**` big integers (unless you can avoid it, which you can!), coprimes, parsers, interpreters, procedural programming, non-parallelizable problems, pointers/mutable structs
 12. `**` graph searching, Dijkstra's algorithm (maybe A* for part 1), passing functions as arguments, reductions, brute force is not the answer
+13. `**` JSON parsing, nested arrays, comparators, sorting, 1-indexed arrays, edge cases, unclear specifications
 
 # Lessons Learned
 * Go is a really low-level language and does not provide batteries for things like `sum()` and `Set()`.
@@ -42,3 +43,4 @@ fmt.Println(A)
 * Go's `for` keyword replaces `while` and allows for some interesting syntax, including `for {}` with no condition.
 * Assignments are legal in an `if` clause.
 * Go's `panic` is very different from [`throw`/`catch`](https://docs.oracle.com/javase/tutorial/essential/exceptions/throwing.html).
+* Here's a little one-liner to measure execution time: `defer func(start time.Time) { fmt.Println(time.Since(start)) }(time.Now())`.
