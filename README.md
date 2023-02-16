@@ -44,3 +44,5 @@ fmt.Println(A)
 * Assignments are legal in an `if` clause.
 * Go's `panic` is very different from [`throw`/`catch`](https://docs.oracle.com/javase/tutorial/essential/exceptions/throwing.html).
 * Here's a little one-liner to measure execution time: `defer func(start time.Time) { fmt.Println(time.Since(start)) }(time.Now())`.
+* Assignments are allowed in `if` conditions. For example, `if _, ok := d[x]; !ok { ... }`.
+* Everything implements `interface{}`, so you can upcast anything to that for hillbilly generics. (I haven't learned Go's actual generics yet).
