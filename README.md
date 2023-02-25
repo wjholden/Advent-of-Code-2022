@@ -17,6 +17,7 @@ This year: Go!
 11. `**` big integers (unless you can avoid it, which you can!), coprimes, parsers, interpreters, procedural programming, non-parallelizable problems, pointers/mutable structs
 12. `**` graph searching, Dijkstra's algorithm (maybe A* for part 1), passing functions as arguments, reductions, brute force is not the answer
 13. `**` JSON parsing, nested arrays, comparators, sorting, 1-indexed arrays, edge cases, unclear specifications
+14. `**` mutable state, if/elseif chains, large problems, coordinate systems, paths
 
 # Lessons Learned
 * Go is a really low-level language and does not provide batteries for things like `sum()` and `Set()`.
@@ -46,3 +47,10 @@ fmt.Println(A)
 * Here's a little one-liner to measure execution time: `defer func(start time.Time) { fmt.Println(time.Since(start)) }(time.Now())`.
 * Assignments are allowed in `if` conditions. For example, `if _, ok := d[x]; !ok { ... }`.
 * Everything implements `interface{}`, so you can upcast anything to that for hillbilly generics. (I haven't learned Go's actual generics yet).
+* Go *really* doesn't want you to use inheritance. It turns out that type assertions (`t.(x)`) are only for interfaces, not structs. I think it's impossible to upcast an *embedding* struct to its *embedded* struct (`type A struct { ... }` and `type B struct { A ... }`).
+* Initializing a struct literal with an embedded struct requires more syntax than you'd expect.
+* Interfaces define only member methods, not member variables.
+* You cannot check if a channel is closed.
+* The [`sync.WaitGroup`](https://pkg.go.dev/sync#WaitGroup) is really cool, but if you're passing it to a function then make sure you pass a pointer. Otherwise, you'll pass by copy and then deadlock. This is different from [channels](https://go.dev/tour/concurrency/2), which you can somehow pass by value. The inconsistency can be confusing. Maybe people usually just declare their `WaitGroup` as a private global variable.
+* Iterate over the key/value pairs of a `map` using `range`.
+
