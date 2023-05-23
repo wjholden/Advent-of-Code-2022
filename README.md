@@ -72,3 +72,8 @@ wg.Wait()
 
 * Iterate over the key/value pairs of a `map` using `range`.
 
+# References
+
+* [The Go Programming Language](https://www.amazon.com/Programming-Language-Addison-Wesley-Professional-Computing/dp/0134190440/)
+* [Google I/O 2012 - Meet the Go Team](https://www.youtube.com/watch?v=sln-gJaURzk)
+* [How to start a Go project in 2023](https://boyter.org/posts/how-to-start-go-project-2023/)
