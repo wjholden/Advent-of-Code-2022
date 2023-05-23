@@ -71,6 +71,7 @@ wg.Wait()
 ```
 
 * Iterate over the key/value pairs of a `map` using `range`.
+* Go can `switch` on channels. If you have some concurrent subscriber that needs to dynamically dispatch on inputs from many publishers, then use multiple channels. Don't try to use a single channel with many interfaces. You cannot (at least, not easily/idiomatically) switch on `instanceof` like you could in Java.
 
 # References
 
