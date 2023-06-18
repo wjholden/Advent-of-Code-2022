@@ -18,6 +18,7 @@ This year: Go!
 12. `**` graph searching, Dijkstra's algorithm (maybe A* for part 1), passing functions as arguments, reductions, brute force is not the answer
 13. `**` JSON parsing, nested arrays, comparators, sorting, 1-indexed arrays, edge cases, unclear specifications
 14. `**` mutable state, if/elseif chains, large problems, coordinate systems, paths
+15. `* ` might need to compare correctness with Julia for this one...
 
 # Lessons Learned
 * Go is a really low-level language and does not provide batteries for things like `sum()` and `Set()`.
