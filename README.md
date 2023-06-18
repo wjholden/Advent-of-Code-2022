@@ -72,6 +72,8 @@ wg.Wait()
 
 * Iterate over the key/value pairs of a `map` using `range`.
 * Go can `switch` on channels. If you have some concurrent subscriber that needs to dynamically dispatch on inputs from many publishers, then use multiple channels. Don't try to use a single channel with many interfaces. You cannot (at least, not easily/idiomatically) switch on `instanceof` like you could in Java.
+* `go run` is a nice way to quickly test programs written in Go. The compiler is so fast that this feels like a scripting language.
+* `go get` and `go install` from Github is difficult and frustrating to get right. It works great with the [gopl.io examples](https://github.com/adonovan/gopl.io/), but I can't get it to work correctly for myself.
 
 # References
 
