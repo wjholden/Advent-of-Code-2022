@@ -52,7 +52,7 @@ fmt.Println(A)
 * Initializing a struct literal with an embedded struct requires more syntax than you'd expect.
 * Interfaces define only member methods, not member variables.
 * You cannot check if a channel is closed.
-* The [`sync.WaitGroup`](https://pkg.go.dev/sync#WaitGroup) is really cool, but if you're passing it to a function then make sure you pass a pointer. Otherwise, you'll pass by copy and then deadlock. This is different from [channels](https://go.dev/tour/concurrency/2), which you can somehow pass by value. The inconsistency can be confusing. Maybe people usually just declare their `WaitGroup` as a private global variable. Another option might be to wrap the target function of your [goroutine](https://go.dev/tour/concurrency/1) in an anonymous function. For example:
+* The [`sync.WaitGroup`](https://pkg.go.dev/sync#WaitGroup) is really cool. If you pass it to a function then make sure you **pass a pointer**. Otherwise, you'll pass by copy and then deadlock. This is different from [channels](https://go.dev/tour/concurrency/2), which you can somehow pass by value. The inconsistency can be confusing. Maybe people usually just declare their `WaitGroup` as a private global variable. Another option might be to wrap the target function of your [goroutine](https://go.dev/tour/concurrency/1) in an anonymous function. For example:
 
 ```
 var wg sync.WaitGroup
