@@ -14,7 +14,7 @@ func main() {
 	c2 := make([]string, 0)
 
 	// read input from file
-	f, err := os.Open("input.txt")
+	f, err := os.Open("day03.txt")
 	if err != nil {
 		panic(err)
 	}

@@ -10,7 +10,7 @@ import (
 
 func main() {
 	// https://stackoverflow.com/questions/6141604/go-readline-string
-	f, err := os.Open("input.txt")
+	f, err := os.Open("day01.txt")
 	if err != nil {
 		panic(err)
 	}

@@ -13,7 +13,7 @@ func main() {
 	// read lines of input
 	//scanner := bufio.NewScanner(os.Stdin)
 	// read input from file
-	f, err := os.Open("input.txt")
+	f, err := os.Open("day05.txt")
 	if err != nil {
 		panic(err)
 	}

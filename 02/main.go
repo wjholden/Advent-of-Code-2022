@@ -43,7 +43,7 @@ func main() {
 	totalScore1 := 0
 	totalScore2 := 0
 
-	f, err := os.Open("input.txt")
+	f, err := os.Open("day02.txt")
 	if err != nil {
 		panic(err)
 	}
