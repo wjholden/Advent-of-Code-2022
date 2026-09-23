@@ -25,13 +25,29 @@ elephant_positions = [[z3.Bool(f'Elephant is at valve {v} at time {t}')
 # I'll model the on/off state of the valves a little different this time.
 # We'll have a separate decision variable for each valve at each time.
 
-flow_v_t = [[z3.Int(f'flow at valve {v} at time {t}')
-    for t in range(n_times)] for v in valves.keys()]
+open_times = [z3.Int(f'valve {v} open for') for v in valves.keys()]
+
+for valve, (flow_rate, _) in valves.items():
+    v = valve_index[valve]
+    if flow_rate == 0:
+        optimizer.add(open_times[v] == n_times)
+    else:
+        for t in range(n_times - 2):
+            # Two in a row means we turned the valve on
+            optimizer.add(z3.Implies(
+                z3.Or(
+                    z3.And(my_positions[v][t], my_positions[v][t+1]),
+                    z3.And(elephant_positions[v][t], elephant_positions[v][t+1]),
+                ),
+                open_times[v] == t
+            ))
+            # If there is no such couple then we fail to turn it on
+            optimizer.add(z3.Implies(z3.And(
+                z3.Not(z3.Or(*[z3.And(my_positions[v][t], my_positions[v][t+1]) for t in range(n_times-1)])),
+                z3.Not(z3.Or(*[z3.And(elephant_positions[v][t], elephant_positions[v][t+1]) for t in range(n_times-1)]))
+            ), open_times[v] == 24))
 
 # Now for the constraints. First, all valves start with a flow of zero.
-
-for v in range(m_valves):
-    optimizer.add(flow_v_t[v][0] == 0)
 
 # We must be at exactly one position at each time.
 for t in range(n_times):
@@ -60,68 +76,34 @@ for t in range(n_times-1):
 # If I am at a valve for two moves in a row, then on the third move the flow
 # takes the value from the associated flow_rate.
 
-for (valve, (flow_rate, _)) in valves.items():
-    v = valve_index[valve]
-    # Skip the ones where flow rate is zero.
-    if flow_rate == 0:
-        # If the flow rate is zero then this valve can never contribute.
-        for t in range(n_times):
-            optimizer.add(flow_v_t[v][t] == 0)
-    else:
-        for t in range(n_times - 2):
-            optimizer.add(
-                z3.Implies(
-                    z3.Or(
-                        z3.And(my_positions[v][t], my_positions[v][t+1]),
-                        z3.And(elephant_positions[v][t], elephant_positions[v][t+1])
-                    ),
-                    flow_v_t[v][t+2] == flow_rate   
-                )
-            )
-        # Once we open a valve it stays open. Otherwise, the flow rate is zero.
-        for t in range(n_times - 1):
-            c = z3.Implies(
-                                flow_v_t[v][t] > 0,
-                                flow_v_t[v][t+1] == flow_rate,
-                                flow_v_t[v][t+1] == 0
-                            )
-            optimizer.add(
-                c
-            )
-            print(c)
-        # The flow rate is either zero or the rate.
-        for t in range(n_times):
-            optimizer.add(z3.Or(flow_v_t[v][t] == 0, flow_v_t[v][t] == flow_rate))
-
 # Last, our starting position. We both start at AA.
 optimizer.add(my_positions[valve_index['AA']][0] == True)
 optimizer.add(elephant_positions[valve_index['AA']][0] == True)
 
 # Our objective is to maximize the sum of all of those flows.
 
-objective = optimizer.maximize(
-    z3.Sum(
-        *[col for row in flow_v_t for col in row]
-    )
-)
+objective = optimizer.maximize(z3.Sum([
+    (26 - open_times[valve_index[v]] - 2) * valves[v][0] for v in valves.keys()
+]))
 
 if optimizer.check() == z3.sat:
     model = optimizer.model()
 
-    # for t in range(n_times):
-    #     for v in range(m_valves):
-    #         if model[my_positions[v][t]]:
-    #             print(my_positions[v][t])
-    #         if model[elephant_positions[v][t]]:
-    #             print(elephant_positions[v][t])
-
-    for v in range(m_valves):
-        for t in range(n_times):
-            print(flow_v_t[v][t],"=",model[flow_v_t[v][t]])
+    for t in range(n_times):
+        for valve in valves.keys():
+            v = valve_index[valve]
+            if model[my_positions[v][t]]:
+                print(my_positions[v][t])
+            if model[elephant_positions[v][t]]:
+                print(elephant_positions[v][t])
+            if model[open_times[v]] == t:
+                print(f"open {valve}")
 
     # print(model)
     # for row in my_positions:
     #     for col in row:
     #         print(model[col])
+
+    # print("Part 2:", sum(model[f].as_long() for f in flow)) # 1946 too low.
 else:
     print("not satisfiable")
