@@ -1,6 +1,7 @@
 import sys
 from functools import cache
 from parser import get_valves_i
+from tqdm import tqdm
 
 if len(sys.argv) < 2:
     print("must provide input file as first argument")
@@ -54,15 +55,23 @@ def flow(time, position, open_valves, mask):
     )
 
 def part2():
+    n = len(list(rmask(valves)))
+    # print(sum(1 if flow_rate > 0 else 0 for flow_rate, _ in valves), len(list(rmask(valves))))
     # print(len(set(masks(len(valves)))))
-    for mask in rmask(valves):
+    i = 1
+    for mask in tqdm(rmask(valves), total = n):
         mask = tuple(mask)
-        me = flow(4, aa, frozenset(), mask)
+        #me = flow(4, aa, frozenset(), mask)
         # flow.cache_clear()
-        me += flow(4, aa, frozenset(), antimask(mask))
-        # flow.cache_clear()
-        yield me
+        #me += flow(4, aa, frozenset(), antimask(mask))
+        if i % 200 == 0:
+            flow.cache_clear()
+        i += 1
+        #yield me
+        yield flow(4, aa, frozenset(), mask) + flow(4, aa, frozenset(), antimask(mask))
+    return
+        
 
 print("Part 1:", flow(0, aa, frozenset(), tuple([1] * len(valves))))
-print("Part 2:", max(part2()))
+print("Part 2:", max(part2())) # 3332 too high.
 
