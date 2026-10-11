@@ -18,7 +18,8 @@ This year: Go!
 12. `**` graph searching, Dijkstra's algorithm (maybe A* for part 1), passing functions as arguments, reductions, brute force is not the answer
 13. `**` JSON parsing, nested arrays, comparators, sorting, 1-indexed arrays, edge cases, unclear specifications
 14. `**` mutable state, if/elseif chains, large problems, coordinate systems, paths
-15. `* ` might need to compare correctness with Julia for this one...
+15. `*#` might need to compare correctness with Julia for this one...
+16. `##` very hard problems: optimization, trees, all-pairs shortest paths
 
 # Lessons Learned
 * Go is a really low-level language and does not provide batteries for things like `sum()` and `Set()`.
@@ -76,6 +77,11 @@ wg.Wait()
 * `go run` is a nice way to quickly test programs written in Go. The compiler is so fast that this feels like a scripting language.
 * `go get` and `go install` from Github is difficult and frustrating to get right. It works great with the [gopl.io examples](https://github.com/adonovan/gopl.io/), but I can't get it to work correctly for myself.
 * Capital letters mark functions public or private. This is the first time I have seen such a convention, and it strikes me as pretty strange.
+
+# More lessons learned from 2026
+* I didn't appreciate the strength of Go's debugger back when I was learning the language. I guess Java had the same advantage - the runtime knows everything and can help you when things go wrong. By comparison, debugging in Rust is pretty rough.
+* The compiler really does go fast and the standard library is robust and easy to use. Again, Java had a similarly robust stdlib with excellent documentation.
+* Go is the most opinionated language I've ever written. Recently, in 2026, there have been some claims that this has unexpected benefits to AI-assisted coding.
 
 # References
 

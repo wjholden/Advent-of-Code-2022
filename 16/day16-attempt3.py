@@ -36,7 +36,6 @@ def rmask(v):
             yield [1] + tail
         yield [0] + tail  
 
-# list(rmask([(1,[]), (0,[]), (2,[]), (0,[])]))
 
 def antimask(mask):
     return tuple(0 if b and valves[b][0] > 0 else 1 for b in mask)
