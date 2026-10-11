@@ -23,6 +23,7 @@ type Valve struct {
 }
 
 var valves = map[string]Valve{}
+var good_valves = []string{}
 
 const START = "AA"
 
@@ -43,30 +44,36 @@ func main() {
 		valves[label] = Valve{flow_rate: flow_rate, neighbors: neighbors}
 	}
 
+	n := len(valves)
 	w := floyd_warshall()
-	// fmt.Println(w)
+	for label, valve := range valves {
+		if valve.flow_rate > 0 {
+			good_valves = append(good_valves, label)
+		}
+	}
 
 	p1mask := make([]bool, len(w))
 	for i := range p1mask {
 		p1mask[i] = true
 	}
 
-	fmt.Println("Part 1:", flow(0, START, []string{}, &w, &p1mask))
+	fmt.Println("Part 1:", flow(0, 0, START, 0, &w, &p1mask))
 
-	// fmt.Println(masks(len(w)))
-	// fmt.Println(len(masks(len(w))))
-
-	// Slow but it works!
 	var candidates []int
-	bar := progressbar.Default(int64(len(masks(len(valves)))))
-	for _, mask := range masks(len(valves)) {
+	mask_count := len(masks(n))
+	bar := progressbar.Default(int64(mask_count / 2))
+	for j, mask := range masks(len(valves)) {
+		if j > mask_count/2 {
+			// De-duplicate work where the elephant gets the exact opposite of what we're taking.
+			break
+		}
 		memo = make(map[State]int)
-		my_time := flow(4, START, []string{}, &w, &mask)
+		my_time := flow(0, 4, START, 0, &w, &mask)
 		for i := range mask {
 			mask[i] = !mask[i]
 		}
 		memo = make(map[State]int)
-		elephant_time := flow(4, START, []string{}, &w, &mask)
+		elephant_time := flow(0, 4, START, 0, &w, &mask)
 		candidates = append(candidates, my_time+elephant_time)
 		bar.Add(1)
 	}
@@ -75,25 +82,27 @@ func main() {
 
 type State struct {
 	time        int
-	position    string
-	open_valves string
+	position_id int
+	open_valves uint64
 }
 
 var memo = map[State]int{}
 
 const TIME_CAP = 30
 
-func flow(time int, position string, open_valves []string, w *[][]float64, mask *[]bool) int {
-	slices.Sort(open_valves)
-	key := State{time, position, strings.Join(open_valves, ",")}
+// Got some really excellent automated feedback on this one. My original version used
+// strings to represent the open valves. Slices aren't hashable in Go, so to use them
+// the memo table I was joining them with a comma. It worked, but it required a lot
+// more computation and allocations than we want. The assistant also pointed out that
+// we don't need to recalculate the flow rate on every invocation - it's OK to pass
+// this along as an argument. Finally, the mask thing. I probably would not have
+// thought of this on my own. The mask is a simple means of selecting the valves that
+// I take or the elephant takes.
+func flow(current_flow int, time int, position string, open_valves uint64, w *[][]float64, mask *[]bool) int {
+	position_id := valve_indices[position]
+	key := State{time, position_id, open_valves}
 	if value, ok := memo[key]; ok {
-		// fmt.Println("Cache hit!")
 		return value
-	}
-	// fmt.Printf("Searching %s time %d\n", position, time)
-	var current_flow int
-	for _, s := range open_valves {
-		current_flow += valves[s].flow_rate
 	}
 	if time >= TIME_CAP {
 		return 0
@@ -102,11 +111,18 @@ func flow(time int, position string, open_valves []string, w *[][]float64, mask 
 	i := valve_indices[position]
 
 	// Warp to any unopened valve with a nonzero flow.
-	for label, valve := range valves {
-		if label == position || valve.flow_rate == 0 || slices.Contains(open_valves, label) {
+	//
+	// Wow! An earlier version of this loop went through all the valves and continued
+	// over the ones with zero flow rate. We get almost 3x speed boost by instead
+	// keeping track of the good ones and iterating only over those.
+	for _, label := range good_valves {
+		if label == position {
 			continue
 		}
 		j := valve_indices[label]
+		if (1<<j)&open_valves != 0 {
+			continue
+		}
 		if (*mask)[j] == false {
 			continue // skip anything that is not included in our mask
 		}
@@ -114,10 +130,10 @@ func flow(time int, position string, open_valves []string, w *[][]float64, mask 
 		if time+dt+1 > TIME_CAP {
 			continue
 		}
-		// Lots of very subtle bugs here.
-		lets_go_open_it := slices.Clone(open_valves)
-		lets_go_open_it = append(lets_go_open_it, label)
-		candidates = append(candidates, current_flow*(dt+1)+flow(time+dt+1, label, lets_go_open_it, w, mask))
+		new_open_valves := open_valves | (1 << j)
+		// We also get a nice speed boost by delaying this lookup until we absolutely know that we need it.
+		flow_rate := valves[label].flow_rate
+		candidates = append(candidates, current_flow*(dt+1)+flow(current_flow+flow_rate, time+dt+1, label, new_open_valves, w, mask))
 	}
 	var value int
 	if len(candidates) == 0 {
