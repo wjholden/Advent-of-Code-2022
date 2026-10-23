@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"math"
 	"slices"
 	"strings"
 )
@@ -31,12 +30,29 @@ var verbose bool
 var show_strudel bool
 var show_last bool
 
+type State struct {
+	y1       int
+	y2       int
+	y3       int
+	y4       int
+	y5       int
+	y6       int
+	y7       int
+	shape_id int
+	dir_id   int
+}
+
+type Tower struct {
+	count  int
+	height int
+}
+
 func main() {
 	verbose_flag := flag.Bool("verbose", false, "Show additional debugging information")
 	strudel_flag := flag.Bool("strudel", false, "Create musical score for https://strudel.cc")
 	showlast_flag := flag.Bool("show_last", false, "Draw the tower at the end")
 	example_flag := flag.Bool("example", false, "Use the example input")
-	limit_flag := flag.Int("limit", math.MaxInt, "Limit for part 1")
+	limit_flag := flag.Int("limit", 1000000000000, "Block limit")
 	flag.Parse()
 	verbose = *verbose_flag
 	show_strudel = *strudel_flag
@@ -52,13 +68,43 @@ func main() {
 	jg := JetGenerator{}
 
 	var part1 int
+	var cycle_length int
+	var cycle_height int
+	var dh int
 
-outer:
+	state_history := make(map[State]Tower)
+
+	// outer:
 	for i := 1; i < *limit_flag; i++ {
 		shape, shape_index := sg.next()
 		if verbose {
 			fmt.Println("New shape", shape_index)
 			shape.print()
+		}
+
+		// Cycle length gets initialized to zero. Once we find it, we don't need to
+		// bother with all this anymore.
+		if cycle_length == 0 {
+			// check if we found the cycle. If we did, add enough that we just need to finish everything.
+			yn := y_normalized()
+			_, dir := jg.peek()
+			state := State{
+				y1: yn[0], y2: yn[1], y3: yn[2], y4: yn[3], y5: yn[4], y6: yn[5], y7: yn[6], shape_id: shape_index, dir_id: dir,
+			}
+			if previous_i, ok := state_history[state]; ok {
+				fmt.Println("Found cycle in", len(state_history), " with ", state)
+				cycle_height = slices.Max(max_y) - previous_i.height
+				cycle_length = i - previous_i.count
+
+				cycles := (1000000000000 - (i - 1)) / cycle_length
+				dh = cycles * cycle_height
+				i = (i - 1) + cycles*cycle_length
+			} else {
+				state_history[state] = Tower{height: slices.Max(max_y), count: i}
+				if verbose {
+					fmt.Println(state, state_history[state])
+				}
+			}
 		}
 	inner:
 		for {
@@ -83,7 +129,6 @@ outer:
 				}
 				if i == 2022 {
 					part1 = slices.Max(max_y)
-					break outer
 				}
 				break inner
 			}
@@ -96,6 +141,9 @@ outer:
 	}
 
 	fmt.Println("Part 1:", part1)
+	fmt.Println("Part 2:", slices.Max(max_y)+dh) // 1547953216391 too low.
+
+	fmt.Println("Miserable problem. You see a zero for part1 because we didn't continue iterating up to i == 2022 above. Take out the part2 stuff and break outer if you want the part1 solution.")
 
 	if *strudel_flag {
 		strudel()
@@ -130,10 +178,10 @@ func strudel() {
 }
 
 func y_normalized() [7]int {
-	y := slices.Max(max_y)
+	y_min := slices.Min(max_y)
 	var result [7]int
-	for i := range max_y {
-		result[i] = y - max_y[i]
+	for i, y := range max_y {
+		result[i] = y - y_min
 	}
 	return result
 }
@@ -345,9 +393,9 @@ func (j *JetGenerator) peek() (int, int) {
 	for {
 		switch puzzle[k%n] {
 		case '<':
-			return -1, k
+			return -1, k % n
 		case '>':
-			return +1, k
+			return +1, k % n
 		default:
 			k++
 		}
