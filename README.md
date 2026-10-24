@@ -20,6 +20,15 @@ This year: Go!
 14. `**` mutable state, if/elseif chains, large problems, coordinate systems, paths
 15. `*#` might need to compare correctness with Julia for this one...
 16. `##` very hard problems: optimization, trees, all-pairs shortest paths
+17. `##` simulations, [cycles](https://www.reddit.com/r/adventofcode/comments/1xed8zq/2022_day_17_strudel_music_visualization_of_the/)
+18. `  `
+19. `  `
+20. `  `
+21. `  `
+22. `  `
+23. `  `
+24. `  `
+25. `  `
 
 # Lessons Learned
 * Go is a really low-level language and does not provide batteries for things like `sum()` and `Set()`.

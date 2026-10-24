@@ -24,7 +24,7 @@ type Shape []Point
 
 var max_y []int
 
-var positions = map[Point]rune{}
+var positions map[Point]rune
 
 var verbose bool
 var show_strudel bool
@@ -52,7 +52,6 @@ func main() {
 	strudel_flag := flag.Bool("strudel", false, "Create musical score for https://strudel.cc")
 	showlast_flag := flag.Bool("show_last", false, "Draw the tower at the end")
 	example_flag := flag.Bool("example", false, "Use the example input")
-	limit_flag := flag.Int("limit", 1000000000000, "Block limit")
 	flag.Parse()
 	verbose = *verbose_flag
 	show_strudel = *strudel_flag
@@ -62,20 +61,30 @@ func main() {
 		puzzle = example
 	}
 
-	max_y = make([]int, 7)
+	fmt.Println("Part 1:", run(2023, false))
 
-	sg := ShapeGenerator{}
-	jg := JetGenerator{}
+	if *strudel_flag {
+		strudel()
+	}
 
-	var part1 int
+	fmt.Println("Part 2:", run(1000000000000, true))
+}
+
+func run(limit int, part2 bool) int {
+	positions = map[Point]rune{}
+
 	var cycle_length int
 	var cycle_height int
 	var dh int
 
 	state_history := make(map[State]Tower)
 
+	max_y = make([]int, 7)
+	sg := ShapeGenerator{}
+	jg := JetGenerator{}
+
 	// outer:
-	for i := 1; i < *limit_flag; i++ {
+	for i := 1; i < limit; i++ {
 		shape, shape_index := sg.next()
 		if verbose {
 			fmt.Println("New shape", shape_index)
@@ -84,7 +93,7 @@ func main() {
 
 		// Cycle length gets initialized to zero. Once we find it, we don't need to
 		// bother with all this anymore.
-		if cycle_length == 0 {
+		if part2 && cycle_length == 0 {
 			// check if we found the cycle. If we did, add enough that we just need to finish everything.
 			yn := y_normalized()
 			_, dir := jg.peek()
@@ -92,7 +101,9 @@ func main() {
 				y1: yn[0], y2: yn[1], y3: yn[2], y4: yn[3], y5: yn[4], y6: yn[5], y7: yn[6], shape_id: shape_index, dir_id: dir,
 			}
 			if previous_i, ok := state_history[state]; ok {
-				fmt.Println("Found cycle in", len(state_history), " with ", state)
+				if verbose {
+					fmt.Println("Found cycle in", len(state_history), " with ", state)
+				}
 				cycle_height = slices.Max(max_y) - previous_i.height
 				cycle_length = i - previous_i.count
 
@@ -127,27 +138,20 @@ func main() {
 				if verbose {
 					fmt.Println("New maximum y positions", max_y)
 				}
-				if i == 2022 {
-					part1 = slices.Max(max_y)
-				}
+				// if i == 2022 {
+				// 	part1 = slices.Max(max_y)
+				// }
 				break inner
 			}
 		}
 	}
 
-	if show_last {
+	if !part2 && show_last {
 		last, _ := sg.next()
 		last.print()
 	}
 
-	fmt.Println("Part 1:", part1)
-	fmt.Println("Part 2:", slices.Max(max_y)+dh) // 1547953216391 too low.
-
-	fmt.Println("Miserable problem. You see a zero for part1 because we didn't continue iterating up to i == 2022 above. Take out the part2 stuff and break outer if you want the part1 solution.")
-
-	if *strudel_flag {
-		strudel()
-	}
+	return slices.Max(max_y) + dh // dh is 0 if part1.
 }
 
 var letters = []string{"c", "d", "e", "f", "g", "a", "b"}
