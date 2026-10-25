@@ -29,16 +29,15 @@ var deltas []D = []D{
 	{dx: 1, dy: 0, dz: 0}, {dx: -1, dy: 0, dz: 0},
 }
 
-func (cube *Cube) neighbors() []Cube {
-	adj := make([]Cube, 0)
-	for _, delta := range deltas {
-		x := cube.x + delta.dx
-		y := cube.y + delta.dy
-		z := cube.z + delta.dz
-		neighbor := Cube{x, y, z}
-		adj = append(adj, neighbor)
+// Using a buffer here is intended to save on allocations.
+// I can't tell that it actually helps.
+func (cube *Cube) neighbors(buf *[]Cube) *[]Cube {
+	for i, delta := range deltas {
+		(*buf)[i].x = cube.x + delta.dx
+		(*buf)[i].y = cube.y + delta.dy
+		(*buf)[i].z = cube.z + delta.dz
 	}
-	return adj
+	return buf
 }
 
 func (cube *Cube) in_bounds(max_x int, max_y int, max_z int) bool {
@@ -54,9 +53,7 @@ func main() {
 	fmt.Println("Part 2:", part2) // 2556 too low
 }
 
-func parse(input string) []Cube {
-	cubes := []Cube{}
-
+func parse(input string) (cubes []Cube) {
 	for line := range strings.Lines(input) {
 		xyz := strings.Split(line, ",")
 		x, err := strconv.Atoi(xyz[0])
@@ -73,17 +70,17 @@ func parse(input string) []Cube {
 		}
 		cubes = append(cubes, Cube{x, y, z})
 	}
-
-	return cubes
+	return
 }
 
 func solve(cubes *[]Cube) (int, int) {
 	var surface_area int
 	volume := map[Cube]struct{}{}
+	buf := make([]Cube, 6)
 
 	for _, cube := range *cubes {
 		ds := 0
-		for _, neighbor := range cube.neighbors() {
+		for _, neighbor := range *cube.neighbors(&buf) {
 			if _, ok := volume[neighbor]; ok {
 				ds--
 			} else {
@@ -97,12 +94,10 @@ func solve(cubes *[]Cube) (int, int) {
 	return surface_area, external_area(&volume)
 }
 
-func external_area(volume *map[Cube]struct{}) int {
-	var external_surface_area int
+func external_area(volume *map[Cube]struct{}) (external_surface_area int) {
 	q := make([]Cube, 0)
 	q = append(q, Cube{}) // 0, 0, 0
 
-	explored := make(map[Cube]struct{})
 	discovered := make(map[Cube]struct{})
 
 	var max_x int
@@ -115,9 +110,11 @@ func external_area(volume *map[Cube]struct{}) int {
 		max_z = max(max_z, cube.z)
 	}
 
+	buf := make([]Cube, 6)
+
 	for {
 		if len(q) == 0 {
-			break
+			return
 		}
 		current := q[0]
 		q = q[1:]
@@ -126,11 +123,7 @@ func external_area(volume *map[Cube]struct{}) int {
 			log.Fatal("Should not have entered volume at", current)
 		}
 
-		explored[current] = struct{}{}
-		for _, neighbor := range current.neighbors() {
-			if _, ok := explored[neighbor]; ok {
-				continue
-			}
+		for _, neighbor := range *current.neighbors(&buf) {
 			if _, ok := (*volume)[neighbor]; ok {
 				external_surface_area++
 				continue
@@ -144,6 +137,4 @@ func external_area(volume *map[Cube]struct{}) int {
 			}
 		}
 	}
-
-	return external_surface_area
 }

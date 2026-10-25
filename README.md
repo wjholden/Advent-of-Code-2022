@@ -21,7 +21,7 @@ This year: Go!
 15. `*#` might need to compare correctness with Julia for this one...
 16. `##` very hard problems: optimization, trees, all-pairs shortest paths
 17. `##` simulations, [cycles](https://www.reddit.com/r/adventofcode/comments/1xed8zq/2022_day_17_strudel_music_visualization_of_the/)
-18. `  `
+18. `##` geometry, graph search
 19. `  `
 20. `  `
 21. `  `
@@ -91,6 +91,7 @@ wg.Wait()
 * I didn't appreciate the strength of Go's debugger back when I was learning the language. I guess Java had the same advantage - the runtime knows everything and can help you when things go wrong. By comparison, debugging in Rust is pretty rough.
 * The compiler really does go fast and the standard library is robust and easy to use. Again, Java had a similarly robust stdlib with excellent documentation.
 * Go is the most opinionated language I've ever written. Recently, in 2026, there have been some claims that this has unexpected benefits to AI-assisted coding.
+* Go's tests are OK. I liked having tests in the same file with Rust, but Go's test structure makes sense and they're easy to use.
 
 # References
 
