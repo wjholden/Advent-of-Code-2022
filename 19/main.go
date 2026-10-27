@@ -19,7 +19,6 @@ func main() {
 		memo := make(map[State]int)
 		var best int
 		geodes := blueprint.collect(state, &memo, &best)
-		fmt.Printf("Blueprint %d makes %d geodes\n", blueprint.blueprint_id, geodes)
 		quality += blueprint.blueprint_id * geodes
 	}
 	fmt.Println("Part 1:", quality)
@@ -208,7 +207,6 @@ func parse(input string) []Blueprint {
 		}
 		blueprint.geode_obsidian = geode_obsidian
 
-		fmt.Println(blueprint)
 		blueprints = append(blueprints, blueprint)
 	}
 	return blueprints
