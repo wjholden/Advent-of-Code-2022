@@ -12,6 +12,7 @@ import (
 var puzzle string
 
 type Link struct {
+	index int
 	value int
 	prev  *Link
 	next  *Link
@@ -30,7 +31,18 @@ func (l *Link) String() string {
 	return fmt.Sprint(a)
 }
 
-func (l *Link) search(x int) *Link {
+func (l *Link) search_index(i int) *Link {
+	current := l
+	for current.index != i {
+		current = current.next
+		if current == l {
+			log.Fatalf("index %d not in linked list", i)
+		}
+	}
+	return current
+}
+
+func (l *Link) search_value(x int) *Link {
 	current := l
 	for current.value != x {
 		current = current.next
@@ -75,17 +87,18 @@ func (current *Link) rotate(x int) (left *Link, right *Link) {
 	return
 }
 
-func (l *Link) mix(x int) {
+func (l *Link) mix(x int, i int, n int) {
 	if x == 0 {
 		return
 	}
-	current := l.search(x)
+	current := l.search_index(i)
 	left := current.prev
 	right := current.next
 	left.next = right
 	right.prev = left
 
-	left, right = current.rotate(x)
+	// left, right = current.rotate(x)
+	left, right = current.rotate(x % (n - 1)) // subtract one because we clipped one node out
 
 	current.prev = left
 	current.next = right
@@ -99,14 +112,20 @@ func main() {
 
 func part1(input *string) int {
 	ct := LLparse(input)
-	for _, x := range parse(input) {
-		ct.mix(x)
+	n := ct.Len()
+	for i, x := range parse(input) {
+		ct.mix(x, i, n)
 	}
 
-	fmt.Println(ct, ct.Len())
-	_, zp1000 := ct.search(0).prev.rotate(1000)
-	_, zp2000 := zp1000.prev.rotate(1000)
-	_, zp3000 := zp2000.prev.rotate(1000)
+	// make sure we didn't drop anything
+	if ct.Len() != len(parse(input)) {
+		log.Fatal("incorrect sequence length")
+	}
+
+	fmt.Println(ct, n)
+	_, zp1000 := ct.search_value(0).prev.rotate(1000 % n)
+	_, zp2000 := zp1000.prev.rotate(1000 % n)
+	_, zp3000 := zp2000.prev.rotate(1000 % n)
 
 	fmt.Println(*zp1000, *zp2000, *zp3000)
 
@@ -123,7 +142,7 @@ func LLparse(input *string) *Link {
 				start.value = x
 				prev = &start
 			} else {
-				current := Link{value: x, prev: prev}
+				current := Link{index: count, value: x, prev: prev}
 				(*prev).next = &current
 				prev = &current
 			}
