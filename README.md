@@ -23,7 +23,7 @@ This year: Go!
 17. `##` simulations, [cycles](https://www.reddit.com/r/adventofcode/comments/1xed8zq/2022_day_17_strudel_music_visualization_of_the/)
 18. `##` geometry, graph search
 19. `##` dynamic programming with pruning
-20. `  `
+20. `# `
 21. `  `
 22. `  `
 23. `  `
@@ -94,6 +94,8 @@ wg.Wait()
 * Go's tests are OK. I liked having tests in the same file with Rust, but Go's test structure makes sense and they're easy to use.
 * Pass-by-value (copy) continues to surprise me. It is so _different_ from Java.
 * Named return values are occasionally nice.
+
+Go is a low-level, opionated, garbage-collected, memory-safe imperative language with excellent concurrency features, composition-over-inheritance object orientation, and a small grammar. While sometimes characterized as a "modern C," I think it is better to think of it as a "simplified Java" for its runtime, automatic memory management, and OOP.
 
 # References
 
