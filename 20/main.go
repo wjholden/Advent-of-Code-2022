@@ -31,6 +31,15 @@ func (l *Link) String() string {
 	return fmt.Sprint(a)
 }
 
+// Gemini helpfully points out a substantial area for optimization here.
+// In theory, this is a very expensive function. In practice, n is so small
+// that we get away with it.
+//
+// What we could have done is initialize the linked list as
+//
+//	nodes := make([]*Link, n)`
+//
+// Then this function would have been a trivial array lookup.
 func (l *Link) search_index(i int) *Link {
 	current := l
 	for current.index != i {
@@ -107,7 +116,42 @@ func (l *Link) mix(x int, i int, n int) {
 }
 
 func main() {
-	fmt.Println("Part 1: ", part1(&puzzle)) // 2842 too high
+	fmt.Println("Part 1: ", part1(&puzzle))
+	fmt.Println("Part 2: ", part2(&puzzle))
+}
+
+func part2(input *string) int {
+	ct := LLparse(input)
+	n := ct.Len()
+
+	{
+		// ugly map
+		var c int
+		for l := ct; c < n; c, l = c+1, l.next {
+			l.value *= 811589153
+		}
+	}
+
+	// fmt.Println("Initial arrangement:", ct)
+
+	values := parse(input)
+
+	// Mix 10 times
+	for range 10 {
+		for i, x := range values {
+			ct.mix(x*811589153, i, n)
+		}
+		// fmt.Println("After a round of mixing:", ct)
+	}
+
+	// fmt.Println(ct, n)
+	_, zp1000 := ct.search_value(0).prev.rotate(1000 % n)
+	_, zp2000 := zp1000.prev.rotate(1000 % n)
+	_, zp3000 := zp2000.prev.rotate(1000 % n)
+
+	// fmt.Println(*zp1000, *zp2000, *zp3000)
+
+	return zp1000.value + zp2000.value + zp3000.value
 }
 
 func part1(input *string) int {
@@ -122,12 +166,12 @@ func part1(input *string) int {
 		log.Fatal("incorrect sequence length")
 	}
 
-	fmt.Println(ct, n)
+	// fmt.Println(ct, n)
 	_, zp1000 := ct.search_value(0).prev.rotate(1000 % n)
 	_, zp2000 := zp1000.prev.rotate(1000 % n)
 	_, zp3000 := zp2000.prev.rotate(1000 % n)
 
-	fmt.Println(*zp1000, *zp2000, *zp3000)
+	// fmt.Println(*zp1000, *zp2000, *zp3000)
 
 	return zp1000.value + zp2000.value + zp3000.value
 }

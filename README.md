@@ -23,7 +23,7 @@ This year: Go!
 17. `##` simulations, [cycles](https://www.reddit.com/r/adventofcode/comments/1xed8zq/2022_day_17_strudel_music_visualization_of_the/)
 18. `##` geometry, graph search
 19. `##` dynamic programming with pruning
-20. `# `
+20. `##` linked lists, modular arithmetic
 21. `  `
 22. `  `
 23. `  `
@@ -94,8 +94,32 @@ wg.Wait()
 * Go's tests are OK. I liked having tests in the same file with Rust, but Go's test structure makes sense and they're easy to use.
 * Pass-by-value (copy) continues to surprise me. It is so _different_ from Java.
 * Named return values are occasionally nice.
+* Go taught me that it's OK to just write a boring `for` loop. Functional programming is cool and all, but a compact `filter`/`map`/`reduce` pipeline might end up being more clever than its worth. Moreover, some algorithms have tricky cases (such as nested loops with conditions) where you really need labeled `break`.
 
-Go is a low-level, opionated, garbage-collected, memory-safe imperative language with excellent concurrency features, composition-over-inheritance object orientation, and a small grammar. While sometimes characterized as a "modern C," I think it is better to think of it as a "simplified Java" for its runtime, automatic memory management, and OOP.
+Go is a low-level, opionated, garbage-collected, memory-safe, compiled, imperative language with a very fast compiler, excellent concurrency features, a large "batteries included" standard library, object orientation based on composition not inheritance, pointers, and a small grammar. While sometimes characterized as a "modern C," I think it is better to think of it as a "simplified Java" for its runtime, automatic memory management, and OOP.
+
+Here's a fun Go puzzler for you:
+
+```go
+package main
+
+import "fmt"
+
+type SelfReference struct {
+	self *SelfReference
+}
+
+func make() SelfReference {
+	s := SelfReference{}
+	s.self = &s
+	return s
+}
+
+func main() {
+	s := make()
+	fmt.Println(s == *s.self, &s == s.self)
+}
+```
 
 # References
 

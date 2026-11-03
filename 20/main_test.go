@@ -32,6 +32,14 @@ func Test1(t *testing.T) {
 	}
 }
 
+func Test2(t *testing.T) {
+	want := 811589153 + 2434767459 - 1623178306
+	got := part2(&example)
+	if want != got {
+		t.Errorf("incorrect result for part 2 (got %d, want %d)", got, want)
+	}
+}
+
 func TestExtra1(t *testing.T) {
 	want := 0
 	got := part1(&extra1)
