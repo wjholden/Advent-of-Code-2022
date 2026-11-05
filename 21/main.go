@@ -47,7 +47,6 @@ func part2(input *string) int {
 	errors[lo] = evaluate(lo)
 	errors[hi] = evaluate(hi)
 
-	// for m := lo; m <= hi; m *= 10 {
 	for {
 		if lo == hi {
 			return lo
@@ -64,6 +63,13 @@ func part2(input *string) int {
 
 		errors[m] = m_err
 
+		// We're looking for the zero in the errors. We know which way to look
+		// based on the lo and hi errors. We won't look in the half where both
+		// are positive or both are negative.
+		//
+		// This looks a little sketchy but it works. There's probably a lot of
+		// assumptions at work here that aren't completely safe in general but
+		// are OK for the puzzle input.
 		if m_err == 0 {
 			return m
 		} else if (m_err < 0 && lo_err > 0) || (m_err > 0 && lo_err < 0) {
