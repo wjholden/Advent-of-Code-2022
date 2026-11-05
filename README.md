@@ -23,8 +23,8 @@ This year: Go!
 17. `##` simulations, [cycles](https://www.reddit.com/r/adventofcode/comments/1xed8zq/2022_day_17_strudel_music_visualization_of_the/)
 18. `##` geometry, graph search
 19. `##` dynamic programming with pruning
-20. `##` linked lists, modular arithmetic
-21. `  `
+20. `##` linked lists, modular arithmetic, truncated vs floored mod
+21. `##` evaluation graphs, directed acyclic graphs, bisection, differentiability
 22. `  `
 23. `  `
 24. `  `
