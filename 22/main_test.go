@@ -2,7 +2,6 @@ package main
 
 import (
 	_ "embed"
-	"fmt"
 	"testing"
 )
 
@@ -10,7 +9,12 @@ import (
 var example string
 
 func Test1(t *testing.T) {
-	fmt.Println(NewBoard(example))
+	board := NewBoard(example)
+	got := board.part1()
+	want := 1000*6 + 4*8 + 0
+	if got != want {
+		t.Errorf("incorrect result for part 1 (got: %d, want %d)", got, want)
+	}
 }
 
 func TestLeft(t *testing.T) {
