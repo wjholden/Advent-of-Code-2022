@@ -84,12 +84,6 @@ var (
 	RightDir = Dir{dr: 0, dc: 1}
 )
 
-var ExampleCube = Cube{
-	pattern: EXAMPLE,
-	length: 4,
-	TopFace: ,
-}
-
 func (c *Cube) move(p Point, dr, dc int, board *Board) (Point, int, int) {
 	// 1) Find the next position.
 	// Warping isn't necessary if we don't change tiles.
@@ -140,6 +134,7 @@ func (c *Cube) face(p Point) *Face {
 	default:
 		log.Fatal("this program uses hardcoded patterns for layout (sorry, this is a hard one)")
 	}
+	return nil
 }
 
 // I really miss Rust's enumerated type right now.
@@ -147,13 +142,13 @@ type Instruction interface {
 	isInstruction()
 }
 
-type Left struct{}
-type Right struct{}
-type Forward struct{ x int }
+type GoLeft struct{}
+type GoRight struct{}
+type GoForward struct{ x int }
 
-func (Left) isInstruction()    {}
-func (Right) isInstruction()   {}
-func (Forward) isInstruction() {}
+func (GoLeft) isInstruction()    {}
+func (GoRight) isInstruction()   {}
+func (GoForward) isInstruction() {}
 
 type Board struct {
 	// How far a row can go left and right
@@ -174,11 +169,11 @@ func (board *Board) part1() int {
 
 	for _, instruction := range board.instructions {
 		switch i := instruction.(type) {
-		case Left:
+		case GoLeft:
 			dr, dc = -dc, dr // dx, dy = -dy, dx but we are in rows and columns.
-		case Right:
+		case GoRight:
 			dr, dc = dc, -dr
-		case Forward:
+		case GoForward:
 			for x := i.x; x > 0; x-- {
 				p := position.move(dr, dc, board)
 				if wall, ok := board.walls[p]; ok && wall {
@@ -305,11 +300,11 @@ func NewBoard(input string) (board Board) {
 					i++
 				}
 			}
-			instruction = Forward{x}
+			instruction = GoForward{x}
 		case a == 'R':
-			instruction = Right{}
+			instruction = GoRight{}
 		case a == 'L':
-			instruction = Left{}
+			instruction = GoLeft{}
 		default:
 			log.Fatal("unexpected instruction", a)
 		}

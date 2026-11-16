@@ -18,7 +18,7 @@ func Test1(t *testing.T) {
 }
 
 func TestLeft(t *testing.T) {
-	got := inspect(Left{})
+	got := inspect(GoLeft{})
 	want := "Left"
 	if got != want {
 		t.Error("unexpected type", got)
@@ -26,7 +26,7 @@ func TestLeft(t *testing.T) {
 }
 
 func TestRight(t *testing.T) {
-	got := inspect(Right{})
+	got := inspect(GoRight{})
 	want := "Right"
 	if got != want {
 		t.Error("unexpected type", got)
@@ -34,7 +34,7 @@ func TestRight(t *testing.T) {
 }
 
 func TestForward(t *testing.T) {
-	got := inspect(Forward{})
+	got := inspect(GoForward{})
 	want := "Forward"
 	if got != want {
 		t.Error("unexpected type", got)
@@ -43,11 +43,11 @@ func TestForward(t *testing.T) {
 
 func inspect(instruction Instruction) (t string) {
 	switch instruction.(type) {
-	case Left:
+	case GoLeft:
 		t = "Left"
-	case Right:
+	case GoRight:
 		t = "Right"
-	case Forward:
+	case GoForward:
 		t = "Forward"
 	default:
 		t = "unexpected"
