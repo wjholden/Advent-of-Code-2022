@@ -7,6 +7,8 @@ import (
 	"math"
 	"strings"
 	"unicode"
+
+	"gonum.org/v1/gonum/mat"
 )
 
 //go:embed day22.txt
@@ -27,32 +29,13 @@ type Point struct {
 	col int
 }
 
-type Point3 struct {
-	x, y, z int
-}
-
-func (p *Point3) move(dx, dy, dz int, cube *Cube) Point3 {
-
-}
-
-type Pattern []Face
-
-type Face struct {
-	x0, y0, z0 int
-	dx, dy, dz int
-	r0, c0     int
-}
-
 type Cube struct {
-	walls  map[Point3]bool
-	length int
+	T, U, L, R, B, F mat.Matrix
+	board            *Board
 }
 
-func NewCube(board *Board, pattern Pattern) Cube {
-	for face := range pattern {
-
-	}
-}
+// func (p *Point) move3D(dr, dc int, cube *Cube) Point {
+// }
 
 func (p *Point) move(dr, dc int, board *Board) Point {
 	row := p.row + dr

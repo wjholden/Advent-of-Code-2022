@@ -1,5 +1,7 @@
 #import "@preview/cetz:0.5.3"
 
+= Advent of Code 2022 Day 22
+
 #align(center)[
   #cetz.canvas(length: 4em, {
     import cetz.draw: *
@@ -17,7 +19,7 @@
   })
 ]
 
-= Top
+== Top
 
 The top face for the unfolded cube with side length $cal(l) = 4$.
 In the unfolded pattern, $"row" = 0$ and $"col" = 2$.
@@ -41,7 +43,7 @@ $
 In matrix form,
 
 $
-vec(x,y,z) = mat(
+vec(x,y,z) = T v = mat(
   0,1,-2,0;
   0,0,1,-1;
   1,0,0,0
@@ -56,9 +58,9 @@ julia> [0 1 -2 0; 0 0 1 -1; 1 0 0 0] * [0 0 3 3; 8 11 8 11; 4 4 4 4; 1 1 1 1]
  0  3  0  3
  3  3  3  3
  0  0  3  3
-```
+``` 
 
-= Front
+== Front
 
 $
   "row" &= 1 \
@@ -73,7 +75,7 @@ $
 $
 
 $
-vec(x,y,z) = mat(
+vec(x,y,z) = F v = mat(
   0,1,-2,0;
   -1,0,2,-1;
   0,0,1,-1
@@ -88,7 +90,7 @@ julia> [0 1 -2 0; -1 0 2 -1; 0 0 1 -1] * [4 4 7 7; 8 11 8 11; 4 4 4 4; 1 1 1 1]
  3  3  3  3
 ```
 
-= Left
+== Left
 
 $
   "row" &= 1 \
@@ -103,7 +105,7 @@ $
 $
 
 $
-vec(x,y,z) = mat(
+vec(x,y,z) = L v = mat(
   0, 0, 0, 0;
   -1, 0, 2, -1;
   0, 1, -1, 0
@@ -118,7 +120,7 @@ julia> [0 0 0 0; -1 0 2 -1; 0 1 -1 0] * [4 4 7 7; 4 7 4 7; 4 4 4 4; 1 1 1 1]
  0  3  0  3
 ```
 
-= Back
+== Back
 
 $
   "row" &= 1 \
@@ -133,7 +135,7 @@ $
 $
 
 $
-vec(x,y,z) = mat(
+vec(x,y,z) = B v = mat(
   0,-1,1,-1;
   -1,0,2,-1;
   0,0,0,0
@@ -148,7 +150,7 @@ julia> [0 -1 1 -1; -1 0 2 -1; 0 0 0 0] * [4 4 7 7; 0 3 0 3; 4 4 4 4; 1 1 1 1]
  0  0  0  0
 ```
 
-= Under
+== Under
 
 $
   "row" &= 2 \
@@ -163,7 +165,7 @@ $
 $
 
 $
-vec(x,y,z) = mat(
+vec(x,y,z) = U v = mat(
   0,1,-2,0;
   0,0,0,0;
   -1,0,3,-1
@@ -178,7 +180,7 @@ julia> [0 1 -2 0; 0 0 0 0; -1 0 3 -1] * [8 8 11 11; 8 11 8 11; 4 4 4 4; 1 1 1 1]
  3  3  0  0
 ```
 
-= Right
+== Right
 
 $
   "row" &= 2 \
@@ -193,7 +195,7 @@ $
 $
 
 $
-vec(x,y,z) = mat(
+vec(x,y,z) = R v = mat(
   0,0,1,-1;
   0,1,-3,0;
   -1,0,3,-1
@@ -207,3 +209,18 @@ julia> [0 0 1 -1; 0 1 -3 0; -1 0 3 -1] * [8 8 11 11; 12 15 12 15; 4 4 4 4; 1 1 1
  0  3  0  3
  3  3  0  0
 ```
+
+= $dif r$ and $dif c$
+
+We need to translate $dif r$ and $dif c$ into a three-dimensional heading. This should be easy.
+
+== Top
+
+$
+  bold(H) &= cases(
+  dif x &= dif c,
+  dif y &= dif r,
+  dif z &= 0,
+  ) \
+  bold(N) &= vec(0, 1, 0)
+$
