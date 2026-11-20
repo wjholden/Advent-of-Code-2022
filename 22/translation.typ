@@ -1,7 +1,5 @@
 #import "@preview/cetz:0.5.3"
 
-= Advent of Code 2022 Day 22
-
 #align(center)[
   #cetz.canvas(length: 4em, {
     import cetz.draw: *
@@ -212,15 +210,85 @@ julia> [0 0 1 -1; 0 1 -3 0; -1 0 3 -1] * [8 8 11 11; 12 15 12 15; 4 4 4 4; 1 1 1
 
 = $dif r$ and $dif c$
 
-We need to translate $dif r$ and $dif c$ into a three-dimensional heading. This should be easy.
+We need to translate $dif r$ and $dif c$ into a three-dimensional heading. This should be easy. Note that the unfolded cube has an inverted vertical axis (the top of the unfolded pattern has $r=0$), but everything below assumes a $+y$-up world.
 
 == Top
 
 $
   bold(H) &= cases(
   dif x &= dif c,
-  dif y &= dif r,
-  dif z &= 0,
-  ) \
+  dif y &= 0,
+  dif z &= dif r,
+  ) = mat(0,1;0,0;1,0) vec(dif r, dif c) \
   bold(N) &= vec(0, 1, 0)
+$
+
+== Front
+
+$
+  bold(H) &= cases(
+    dif x &= dif c,
+    dif y &= -dif r,
+    dif z &= 0,
+  ) = mat(0, 1; -1, 0; 0, 0) vec(dif r, dif c) \
+  bold(N) &= vec(0, 0, 1)
+$
+
+== Left
+
+$
+  bold(H) &= cases(
+  dif x &= 0,
+  dif y &= -dif r,
+  dif z &= dif c,
+  ) = mat(0, 0; -1, 0; 0, 1) vec(dif r, dif c) \
+  bold(N) &= vec(-1, 0, 0)
+$
+
+== Back
+
+$
+  bold(H) &= cases(
+  dif x &= -dif c,
+  dif y &= -dif r,
+  dif z &= 0,
+  ) = mat(0, -1; -1, 0; 0, 0) vec(dif r, dif c) \
+  bold(N) &= vec(0, 0, -1)
+$
+
+== Under
+
+$
+  bold(H) &= cases(
+  dif x &= dif c,
+  dif y &= 0,
+  dif z &= -dif r,
+  ) = mat(0, 1; 0, 0; -1, 0) vec(dif r, dif c) \
+  bold(N) &= vec(0, -1, 0)
+$
+
+== Right
+
+$
+  bold(H) &= cases(
+  dif x &= 0,
+  dif y &= dif c,
+  dif z &= -dif r,
+  ) = mat(0, 0; 0, 1; -1, 0) vec(dif r, dif c) \
+  bold(N) &= vec(1, 0, 0)
+$
+
+= New Directions
+
+Updating heading is easy:
+
+$
+  bold(H)' = -bold(N)
+$
+
+We're just heading in the opposite direction of our old normal vector.
+Likewise, your new normal vector is simply your old heading.
+
+$
+  bold(N)' = bold(H)
 $

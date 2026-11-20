@@ -2,6 +2,7 @@ package main
 
 import (
 	_ "embed"
+	"errors"
 	"fmt"
 	"log"
 	"math"
@@ -29,13 +30,98 @@ type Point struct {
 	col int
 }
 
-type Cube struct {
-	T, U, L, R, B, F mat.Matrix
-	board            *Board
+type Face struct {
+	min_r, max_r, min_c, max_c int
 }
 
-// func (p *Point) move3D(dr, dc int, cube *Cube) Point {
-// }
+type Cube struct {
+	T                      [6]mat.Matrix
+	H                      [6]mat.Matrix
+	N                      [6]mat.Matrix
+	board                  *Board
+	length                 int
+	ft, fu, fl, fr, fb, ff Face
+}
+
+func (c *Cube) GetFace(p *Point) (int, error) {
+	switch {
+	case p.IsInside(&c.ft):
+		return 0, nil
+	case p.IsInside(&c.fu):
+		return 1, nil
+	case p.IsInside(&c.fl):
+		return 2, nil
+	case p.IsInside(&c.fr):
+		return 3, nil
+	case p.IsInside(&c.fb):
+		return 4, nil
+	case p.IsInside(&c.ff):
+		return 5, nil
+	default:
+		return -1, errors.New("this point is not on a face")
+	}
+}
+
+func (c *Cube) IsOn(xyz mat.VecDense) bool {
+	x := xyz.At(0, 0)
+	y := xyz.At(1, 0)
+	z := xyz.At(2, 0)
+	return 0 <= x && x <= float64(c.length) &&
+		0 <= y && y <= float64(c.length) &&
+		0 <= z && z <= float64(c.length)
+}
+
+func (p *Point) IsInside(f *Face) bool {
+	return f.min_r <= p.row && p.row <= f.max_r &&
+		f.min_c <= p.col && p.col <= f.max_c
+}
+
+func (p *Point) move3D(dr, dc int, cube *Cube) Point {
+	// First, try to just push it in the direction it was going.
+	p_new := Point{row: p.row + dr, col: p.col + dc}
+	_, err := cube.GetFace(&p_new)
+	if err != nil {
+		// We're still on the cube. Is there a wall on this position?
+		if _, ok := cube.board.walls[p_new]; ok {
+			// Yes, there is a wall here.
+			return *p
+		} else {
+			return p_new
+		}
+	}
+	// We're off the cube. We need to warp to another side.
+	face, err := cube.GetFace(p)
+	if err != nil {
+		log.Fatal("invariant violation - we got off the cube")
+	}
+	t := cube.T[face]
+	v := mat.NewVecDense(4, []float64{float64(p.row), float64(p.col), float64(cube.length), 1})
+	xyz := mat.NewVecDense(3, nil)
+	xyz.MulVec(t, v)
+	h := cube.H[face]
+	d_xyz := mat.NewVecDense(3, nil)
+	d_rc := mat.NewVecDense(2, []float64{float64(dr), float64(dc)})
+	d_xyz.MulVec(h, d_rc)
+	p_xyz := mat.NewVecDense(3, nil)
+	p_xyz.AddVec(xyz, d_xyz)
+	// Are we still on a face?
+	if cube.IsOn(*p_xyz) {
+		// Is there a wall here?
+		rcl1 := mat.NewVecDense(4, nil)
+		if rcl1.SolveVec(h, p_xyz) != nil {
+			log.Fatal("failed to reverse row and column")
+		}
+		p_new.row = int(rcl1.AtVec(0))
+		p_new.col = int(rcl1.AtVec(1))
+		if _, ok := cube.board.walls[p_new]; ok {
+			// There was a wall in our way.
+			return *p
+		}
+		// There was no wall in our way.
+		return p_new
+	}
+	// We need to warp.
+}
 
 func (p *Point) move(dr, dc int, board *Board) Point {
 	row := p.row + dr
