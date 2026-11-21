@@ -25,8 +25,8 @@ This year: Go!
 19. `##` dynamic programming with pruning
 20. `##` linked lists, modular arithmetic, truncated vs floored mod
 21. `##` evaluation graphs, directed acyclic graphs, bisection, differentiability
-22. `# ` procedural programming, circular array references, grids
-23. `  `
+22. `##` procedural programming, circular array references, grids, 3D grids, linear transformations, **unexpectedly hard**, hardcoded approaches where the general solution difficult or impossible
+23. `# ` procedural programming, out-of-order switch cases, automata
 24. `  `
 25. `  `
 
