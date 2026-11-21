@@ -1,5 +1,7 @@
 #import "@preview/cetz:0.5.3"
 
+= Advent of Code 2022 Day 22
+
 #align(center)[
   #cetz.canvas(length: 4em, {
     import cetz.draw: *
@@ -17,7 +19,9 @@
   })
 ]
 
-== Top
+== Transforming rows and columns into $(x,y,z)$ coordiantes
+
+=== Top
 
 The top face for the unfolded cube with side length $cal(l) = 4$.
 In the unfolded pattern, $"row" = 0$ and $"col" = 2$.
@@ -33,9 +37,9 @@ $
 The functions to transform $(r,c)$ to $(x,y,z)$ are:
 
 $
-x &= c - 2 cal(l) = c - "col" cal(l)\
+x &= c - 2 cal(l) = c - 2 cal(l)\
 y &= cal(l) - 1\
-z &= r = r - 0 cal(l) = r - "row" cal(l)
+z &= r = r - 0 cal(l) = r - cal(l)
 $
 
 In matrix form,
@@ -48,6 +52,16 @@ vec(x,y,z) = T v = mat(
 ) vec(r,c,cal(l),1)
 $
 
+Alternatively,
+
+$
+  vec(x,y,z) = A x+b = mat(0, 1; 0, 0; 1, 0) vec(r,c) + vec(-2cal(l), cal(l)-1, 0)
+$
+
+(Coincidentally, $A$ is exactly equal to the heading matrices we'll see below.)
+
+With this, all we need to reverse this is to solve $ A^(-1) (vec(x,y,z) - b) = A^(-1) A x = x = vec(r,c) $
+
 Tested in Julia:
 
 ```julia
@@ -58,7 +72,7 @@ julia> [0 1 -2 0; 0 0 1 -1; 1 0 0 0] * [0 0 3 3; 8 11 8 11; 4 4 4 4; 1 1 1 1]
  0  0  3  3
 ``` 
 
-== Front
+=== Front
 
 $
   "row" &= 1 \
@@ -80,6 +94,12 @@ vec(x,y,z) = F v = mat(
 ) vec(r,c,cal(l),1)
 $
 
+Alternatively,
+
+$
+  vec(x,y,z) = A x+b = mat(0, 1; -1, 0; 0, 0) vec(r,c) + vec(-2cal(l), 2cal(l)-1, cal(l) -1)
+$
+
 ```julia
 julia> [0 1 -2 0; -1 0 2 -1; 0 0 1 -1] * [4 4 7 7; 8 11 8 11; 4 4 4 4; 1 1 1 1]
 3×4 Matrix{Int64}:
@@ -88,7 +108,7 @@ julia> [0 1 -2 0; -1 0 2 -1; 0 0 1 -1] * [4 4 7 7; 8 11 8 11; 4 4 4 4; 1 1 1 1]
  3  3  3  3
 ```
 
-== Left
+=== Left
 
 $
   "row" &= 1 \
@@ -110,6 +130,12 @@ vec(x,y,z) = L v = mat(
 ) vec(r,c,cal(l),1)
 $
 
+Alternatively,
+
+$
+  vec(x,y,z) = A x+b = mat(0, 0; -1, 0; 0, 1) vec(r,c) + vec(0, 2cal(l)-1,-cal(l))
+$
+
 ```julia
 julia> [0 0 0 0; -1 0 2 -1; 0 1 -1 0] * [4 4 7 7; 4 7 4 7; 4 4 4 4; 1 1 1 1]
 3×4 Matrix{Int64}:
@@ -118,7 +144,7 @@ julia> [0 0 0 0; -1 0 2 -1; 0 1 -1 0] * [4 4 7 7; 4 7 4 7; 4 4 4 4; 1 1 1 1]
  0  3  0  3
 ```
 
-== Back
+=== Back
 
 $
   "row" &= 1 \
@@ -140,6 +166,12 @@ vec(x,y,z) = B v = mat(
 ) vec(r,c,cal(l),1)
 $
 
+Alternatively,
+
+$
+  vec(x,y,z) = A x+b = mat(0, -1;-1, 0; 0, 0) vec(r,c) + vec(cal(l)-1,2cal(l)-1,0)
+$
+
 ```julia
 julia> [0 -1 1 -1; -1 0 2 -1; 0 0 0 0] * [4 4 7 7; 0 3 0 3; 4 4 4 4; 1 1 1 1]
 3×4 Matrix{Int64}:
@@ -148,7 +180,7 @@ julia> [0 -1 1 -1; -1 0 2 -1; 0 0 0 0] * [4 4 7 7; 0 3 0 3; 4 4 4 4; 1 1 1 1]
  0  0  0  0
 ```
 
-== Under
+=== Under
 
 $
   "row" &= 2 \
@@ -170,6 +202,12 @@ vec(x,y,z) = U v = mat(
 ) vec(r,c,cal(l),1)
 $
 
+Alternatively,
+
+$
+  vec(x,y,z) = A x+b = mat(0,1;0,0;-1,0) vec(r,c) + vec(-2cal(l),0,3cal(l)-1)
+$
+
 ```julia
 julia> [0 1 -2 0; 0 0 0 0; -1 0 3 -1] * [8 8 11 11; 8 11 8 11; 4 4 4 4; 1 1 1 1]
 3×4 Matrix{Int64}:
@@ -178,7 +216,7 @@ julia> [0 1 -2 0; 0 0 0 0; -1 0 3 -1] * [8 8 11 11; 8 11 8 11; 4 4 4 4; 1 1 1 1]
  3  3  0  0
 ```
 
-== Right
+=== Right
 
 $
   "row" &= 2 \
@@ -200,6 +238,12 @@ vec(x,y,z) = R v = mat(
 ) vec(r,c,cal(l),1)
 $
 
+Alternatively,
+
+$
+  vec(x,y,z) = A x+b = mat(0,0;0,1;-1,0) vec(r,c) + vec(cal(l)-1,-3cal(l),3cal(l)-1)
+$
+
 ```julia
 julia> [0 0 1 -1; 0 1 -3 0; -1 0 3 -1] * [8 8 11 11; 12 15 12 15; 4 4 4 4; 1 1 1 1]
 3×4 Matrix{Int64}:
@@ -208,11 +252,12 @@ julia> [0 0 1 -1; 0 1 -3 0; -1 0 3 -1] * [8 8 11 11; 12 15 12 15; 4 4 4 4; 1 1 1
  3  3  0  0
 ```
 
-= $dif r$ and $dif c$
+== $dif r$ and $dif c$
 
 We need to translate $dif r$ and $dif c$ into a three-dimensional heading. This should be easy. Note that the unfolded cube has an inverted vertical axis (the top of the unfolded pattern has $r=0$), but everything below assumes a $+y$-up world.
 
-== Top
+#columns(2)[
+=== Top
 
 $
   bold(H) &= cases(
@@ -223,7 +268,7 @@ $
   bold(N) &= vec(0, 1, 0)
 $
 
-== Front
+=== Front
 
 $
   bold(H) &= cases(
@@ -234,7 +279,7 @@ $
   bold(N) &= vec(0, 0, 1)
 $
 
-== Left
+=== Left
 
 $
   bold(H) &= cases(
@@ -245,7 +290,9 @@ $
   bold(N) &= vec(-1, 0, 0)
 $
 
-== Back
+#colbreak()
+
+=== Back
 
 $
   bold(H) &= cases(
@@ -256,7 +303,7 @@ $
   bold(N) &= vec(0, 0, -1)
 $
 
-== Under
+=== Under
 
 $
   bold(H) &= cases(
@@ -267,7 +314,7 @@ $
   bold(N) &= vec(0, -1, 0)
 $
 
-== Right
+=== Right
 
 $
   bold(H) &= cases(
@@ -278,7 +325,9 @@ $
   bold(N) &= vec(1, 0, 0)
 $
 
-= New Directions
+]
+
+== New Directions
 
 Updating heading is easy:
 
@@ -292,3 +341,121 @@ Likewise, your new normal vector is simply your old heading.
 $
   bold(N)' = bold(H)
 $
+
+// #pagebreak()
+== My puzzle input
+
+#align(center)[
+  #cetz.canvas(length: 4em, {
+    import cetz.draw: *
+
+    // (row, column) from top to bottom, left to right.
+    // Note that these row/column conventions are different from the other cetz diagram above.
+    let squares = (
+      (0, 1), (0, 2),
+      (1, 1),
+      (2, 0), (2, 1),
+      (3, 0),
+    )
+
+    for (r, c) in squares {
+      rect((c, 3 - r), (c + 1, 3 - r + 1))
+    }
+  })
+]
+
+#columns(2)[
+
+=== Top
+
+#table(
+  columns: 2,
+  table.header($(r,c)$, $(x,y,z)$),
+  $(4,0)$, $(0,3,0)$,
+  $(4,3)$, $(3,3,0)$,
+  $(7,0)$, $(0,3,3)$,
+  $(7,3)$, $(3,3,3)$
+)
+
+$
+  vec(x,y,z) = A x + b = mat(0, 1; 0, 0; 0, -1) vec(r, c) + vec(0,cal(l)-1,-cal(l))
+$
+
+=== Left
+
+#table(
+  columns: 2,
+  table.header($(r,c)$, $(x,y,z)$),
+  $(8,0)$, $(0,3,3)$,
+  $(8,3)$, $(0,0,3)$,
+  $(11,0)$, $(0,3,0)$,
+  $(11,3)$, $(0,0,0)$
+)
+
+$
+  vec(x,y,z) = A x + b = mat(0,0;0,-1;-1,0) vec(r, c) + vec(0,0,3cal(l)-1)
+$
+
+=== Front
+
+#table(
+  columns: 2,
+  table.header($(r,c)$, $(x,y,z)$),
+  $(4,4)$, $(0,3,3)$,
+  $(4,7)$, $(3,3,3)$,
+  $(7,4)$, $(0,0,3)$,
+  $(7,7)$, $(3,0,3)$
+)
+
+$
+  vec(x,y,z) = A x + b = mat() vec(r, c) + vec()
+$
+
+// #colbreak()
+
+=== Right
+
+#table(
+  columns: 2,
+  table.header($(r,c)$, $(x,y,z)$),
+  $()$, $()$,
+  $()$, $()$,
+  $()$, $()$,
+  $()$, $()$
+)
+
+$
+  vec(x,y,z) = A x + b = mat() vec(r, c) + vec()
+$
+
+=== Under
+
+#table(
+  columns: 2,
+  table.header($(r,c)$, $(x,y,z)$),
+  $()$, $()$,
+  $()$, $()$,
+  $()$, $()$,
+  $()$, $()$
+)
+
+$
+  vec(x,y,z) = A x + b = mat(0,1;0,0;-1,0) vec(r, c) + vec(-cal(l),0,3cal(l)-1)
+$
+
+=== Back
+
+#table(
+  columns: 2,
+  table.header($(r,c)$, $(x,y,z)$),
+  $()$, $()$,
+  $()$, $()$,
+  $()$, $()$,
+  $()$, $()$
+)
+
+$
+  vec(x,y,z) = A x + b = mat() vec(r, c) + vec()
+$
+
+]
