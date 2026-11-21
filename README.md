@@ -25,8 +25,8 @@ This year: Go!
 19. `##` dynamic programming with pruning
 20. `##` linked lists, modular arithmetic, truncated vs floored mod
 21. `##` evaluation graphs, directed acyclic graphs, bisection, differentiability
-22. `##` procedural programming, circular array references, grids, 3D grids, linear transformations, **unexpectedly hard**, hardcoded approaches where the general solution difficult or impossible
-23. `# ` procedural programming, out-of-order switch cases, automata
+22. `##` procedural programming, circular array references, grids, 3D grids, linear transformations, **unexpectedly hard**, hardcoded approaches where the general solution is difficult or impossible
+23. `##` procedural programming, out-of-order switch cases, automata, idempotence
 24. `  `
 25. `  `
 
@@ -36,12 +36,12 @@ This year: Go!
 * Go ranges are `[inclusive:exclusive]` (which Donovan & Kernighan call "half-open")
 * [Unused variables cause a compile-time error in Go](https://go.dev/doc/faq#unused_variables_and_imports). (You can suppress the error with `_`).
 * Just like Java and JavaScript, `copy()` works fine on a 1D array but it isn't deep.
-* Go's object-orientation does not really accomodate control flow switched on types. In Java, you might have used the `instanceof` operator to downcast a variable to a more specific type. Go uses a `.` to test interface satisfiability, `type.(value)`, but I don't think you can downcast at all.
+* Go's object-orientation does not really accommodate control flow switched on types. In Java, you might have used the `instanceof` operator to downcast a variable to a more specific type. Go uses a `.` to test interface satisfiability, `type.(value)`, but I don't think you can downcast at all.
 * Goroutines are great! Go has the easiest concurrency model of any language that I have used.
 * You'd think the simple rule "values are always passed by value" would be easy to remember, but this can surprise you if you've come from languages (like Java and Python) that pass object **references**. If you want to mutate an object in a function (or even `for` loop), then you need pointers.
 * Fortunately, pointers are not terribly difficult in Go. The trickiest thing was getting the syntax just right for taking pointers to array members. Here is a working example:
 
-```
+```go
 var A []int = []int{1, 2, 3, 4}
 var x *int = &A[0]
 *x = 1234
@@ -51,7 +51,7 @@ fmt.Println(A)
 * You also need pointers for fast code if you want to avoid lots of copying.
 * You cannot get a pointer to a dictionary member.
 * `slice = slice[:0]` is a neat trick to clear the contents of a slice.
-* You can deserialize arbitrary JSON to an `interface{}`. From there, you can use [type assertions](https://go.dev/tour/methods/15) which is loosly comparable to a [cast](https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html) but maybe more restrictive.
+* You can deserialize arbitrary JSON to an `interface{}`. From there, you can use [type assertions](https://go.dev/tour/methods/15) which is loosely comparable to a [cast](https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html) but maybe more restrictive.
 * Go's `for` keyword replaces `while` and allows for some interesting syntax, including `for {}` with no condition.
 * Assignments are legal in an `if` clause.
 * Go's `panic` is very different from [`throw`/`catch`](https://docs.oracle.com/javase/tutorial/essential/exceptions/throwing.html).
@@ -64,7 +64,7 @@ fmt.Println(A)
 * You cannot check if a channel is closed.
 * The [`sync.WaitGroup`](https://pkg.go.dev/sync#WaitGroup) is really cool. If you pass it to a function then make sure you **pass a pointer**. Otherwise, you'll pass by copy and then deadlock. This is different from [channels](https://go.dev/tour/concurrency/2), which you can somehow pass by value. The inconsistency can be confusing. Maybe people usually just declare their `WaitGroup` as a private global variable. Another option might be to wrap the target function of your [goroutine](https://go.dev/tour/concurrency/1) in an anonymous function. For example:
 
-```
+```go
 var wg sync.WaitGroup
 for _, x := range X {
     wg.Add(1)
@@ -95,8 +95,10 @@ wg.Wait()
 * Pass-by-value (copy) continues to surprise me. It is so _different_ from Java.
 * Named return values are occasionally nice.
 * Go taught me that it's OK to just write a boring `for` loop. Functional programming is cool and all, but a compact `filter`/`map`/`reduce` pipeline might end up being more clever than its worth. Moreover, some algorithms have tricky cases (such as nested loops with conditions) where you really need labeled `break`.
+* Go's zero values mean that you can, for example, safely count on a zero being returned on a missing map entry. So, on `var D map[int]int` you can safely call `D[i]++` without checking if `i` was already in `D`.
+* Apparently you don't need to pass pointers to maps into functions. The structure of a map is already a bunch of pointers. Copying this header frame does not copy the underlying data. So, there isn't any penalty to copying the map header, while there is an unsightly penalty - you would have to dereference the pointer (i.e., `(*A)[x]` instead of `A[x]`).
 
-Go is a low-level, opionated, garbage-collected, memory-safe, compiled, imperative language with a very fast compiler, excellent concurrency features, a large "batteries included" standard library, object orientation based on composition not inheritance, pointers, and a small grammar. While sometimes characterized as a "modern C," I think it is better to think of it as a "simplified Java" for its runtime, automatic memory management, and OOP.
+Go is a low-level, opinonated, garbage-collected, memory-safe, compiled, imperative language with a very fast compiler, excellent concurrency features, a large "batteries included" standard library, object orientation based on composition not inheritance, pointers, and a small grammar. While sometimes characterized as a "modern C," I think it is better to think of it as a "simplified Java" for its runtime, automatic memory management, and OOP.
 
 Here's a fun Go puzzler for you:
 

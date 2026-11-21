@@ -11,7 +11,9 @@ import (
 var puzzle string
 
 func main() {
-	fmt.Println("Part 1:", part1(parse(puzzle)))
+	part1, part2 := solve(parse(puzzle))
+	fmt.Println("Part 1:", part1)
+	fmt.Println("Part 2:", part2)
 }
 
 type Point struct {
@@ -28,9 +30,8 @@ type RuleAndResult struct {
 // so copying those pointers is already pretty lightweight.
 // This saves you the ugly syntax that looks like (*M)[x].
 // Passing a map directly into a function does not copy its data.
-func (p *Point) next(elves Elves, round int) Point {
-	x := p.x
-	y := p.y
+func (p Point) next(elves Elves, round int) Point {
+	x, y := p.x, p.y
 	_, N := elves[Point{x: x, y: y + 1}]
 	_, NE := elves[Point{x: x + 1, y: y + 1}]
 	_, NW := elves[Point{x: x - 1, y: y + 1}]
@@ -41,7 +42,7 @@ func (p *Point) next(elves Elves, round int) Point {
 	_, E := elves[Point{x: x + 1, y: y}]
 
 	if !N && !NE && !NW && !S && !SE && !SW && !W && !E {
-		return *p
+		return p
 	}
 
 	rr := [4]RuleAndResult{
@@ -64,14 +65,13 @@ func (p *Point) next(elves Elves, round int) Point {
 	}
 
 	for i := range 4 {
-		r := rr[(i+round)%4]
-		if r.IsSatisfied {
+		if r := rr[(i+round)%4]; r.IsSatisfied {
 			return r.Result
 		}
 	}
 
 	// No rule matched.
-	return *p
+	return p
 }
 
 type Elves map[Point]struct{}
@@ -84,7 +84,7 @@ func parse(input string) Elves {
 		switch char {
 		case '#':
 			elves[Point{x: col, y: -row}] = struct{}{}
-		case '.':
+		case '.', '\r':
 		case '\n':
 			row++
 			col = 0
@@ -95,25 +95,22 @@ func parse(input string) Elves {
 	return elves
 }
 
-func part1(elves Elves) int {
-	// 10 rounds for part 1
-	for round := range 10 {
-		// fmt.Printf("Round %d:\n%s\n\n", round, elves)
+func solve(elves Elves) (int, int) {
+	var part1, part2 int
+	for round := 0; ; round++ {
 		// first half of the round: proposals
-		proposal := make(map[Point]int)
+		proposal_count := make(map[Point]int, len(elves))
+		proposal_cache := make(map[Point]Point, len(elves))
 		for e := range elves {
 			p := e.next(elves, round)
-			if n, ok := proposal[p]; ok {
-				proposal[p] = n + 1
-			} else {
-				proposal[p] = 1
-			}
+			proposal_count[p]++
+			proposal_cache[e] = p
 		}
+		moves := 0
 		// second half of the round: move iff no conflict
-		new_elves := make(Elves)
-		for e := range elves {
-			p := e.next(elves, round)
-			n, ok := proposal[p]
+		new_elves := make(Elves, len(elves))
+		for e, p := range proposal_cache {
+			n, ok := proposal_count[p]
 			if !ok {
 				log.Fatal("did not find expected proposal")
 			}
@@ -122,8 +119,11 @@ func part1(elves Elves) int {
 				// don't move
 				move = e
 			} else {
-				// move to next to proposed position
+				// move to next proposed position
 				move = p
+				if e != p {
+					moves++
+				}
 			}
 			new_elves[move] = struct{}{}
 		}
@@ -132,11 +132,25 @@ func part1(elves Elves) int {
 		}
 		// commit proposals
 		elves = new_elves
+
+		if round == 9 {
+			min_x, max_x, min_y, max_y := elves.bounds()
+			part1 = (1+max_x-min_x)*(1+max_y-min_y) - len(elves)
+			fmt.Println(elves)
+		}
+
+		if moves == 0 {
+			part2 = round + 1
+			// This is for one of the tests.
+			if part1 == 0 {
+				min_x, max_x, min_y, max_y := elves.bounds()
+				part1 = (1+max_x-min_x)*(1+max_y-min_y) - len(elves)
+			}
+			break
+		}
 	}
 
-	fmt.Println(elves)
-	min_x, max_x, min_y, max_y := elves.bounds()
-	return (1+max_x-min_x)*(1+max_y-min_y) - len(elves)
+	return part1, part2
 }
 
 func (elves Elves) bounds() (min_x, max_x, min_y, max_y int) {

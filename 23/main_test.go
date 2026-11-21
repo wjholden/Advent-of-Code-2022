@@ -13,7 +13,7 @@ var example_small string
 
 func Test1(t *testing.T) {
 	want := 110
-	got := part1(parse(example_large))
+	got, _ := solve(parse(example_large))
 	if want != got {
 		t.Errorf("incorrect result for part 1 (got %d, want %d)", got, want)
 	}
@@ -21,8 +21,16 @@ func Test1(t *testing.T) {
 
 func TestSmall(t *testing.T) {
 	want := 5*6 - 5
-	got := part1(parse(example_small))
+	got, _ := solve(parse(example_small))
 	if want != got {
 		t.Errorf("incorrect result for part 1 (got %d, want %d)", got, want)
+	}
+}
+
+func Test2(t *testing.T) {
+	want := 20
+	_, got := solve(parse(example_large))
+	if want != got {
+		t.Errorf("incorrect result for part 2 (got %d, want %d)", got, want)
 	}
 }
