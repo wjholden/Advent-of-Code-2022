@@ -17,6 +17,41 @@ var puzzle string
 func main() {
 	board := NewBoard(puzzle)
 	fmt.Println("Part 1:", board.part1())
+
+	l := float64(board.cube_len)
+
+	top := Vec3{0, 1, 0}
+	front := Vec3{0, 0, 1}
+	left := Vec3{-1, 0, 0}
+	back := Vec3{0, 0, -1}
+	under := Vec3{0, -1, 0}
+	right := Vec3{1, 0, 0}
+
+	A := map[Vec3]mat.Matrix{
+		top:   mat.NewDense(3, 2, []float64{0, 1, 0, 0, 1, 0}),
+		front: mat.NewDense(3, 2, []float64{0, 1, -1, 0, 0, 0}),
+		left:  mat.NewDense(3, 2, []float64{0, 0, 0, -1, -1, 0}),
+		back:  mat.NewDense(3, 2, []float64{1, 0, 0, -1, 0, 0}),
+		under: mat.NewDense(3, 2, []float64{0, 1, 0, 0, -1, 0}),
+		right: mat.NewDense(3, 2, []float64{0, 0, 0, -1, 1, 0}),
+	}
+
+	b := map[Vec3]mat.VecDense{
+		top:   *mat.NewVecDense(3, []float64{-l, l - 1, 0}),
+		front: *mat.NewVecDense(3, []float64{-l, 2*l - 1, l - 1}),
+		left:  *mat.NewVecDense(3, []float64{0, l - 1, 3*l - 1}),
+		back:  *mat.NewVecDense(3, []float64{-3 * l, l - 1, 0}),
+		under: *mat.NewVecDense(3, []float64{-l, 0, 3*l - 1}),
+		right: *mat.NewVecDense(3, []float64{l - 1, 3*l - 1, 0}),
+	}
+
+	cube := BetterCube{
+		board: &board,
+		A:     A,
+		b:     b,
+	}
+
+	fmt.Println("Part 2:", cube.part2())
 }
 
 type Bound struct {

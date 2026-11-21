@@ -352,10 +352,10 @@ $
     // (row, column) from top to bottom, left to right.
     // Note that these row/column conventions are different from the other cetz diagram above.
     let squares = (
-      (0, 1), (0, 2),
-      (1, 1),
-      (2, 0), (2, 1),
-      (3, 0),
+      (0, 1) /* top */, (0, 2) /* right */,
+      (1, 1) /* front */,
+      (2, 0) /* left */, (2, 1) /* under */,
+      (3, 0) /* back */,
     )
 
     for (r, c) in squares {
@@ -378,7 +378,7 @@ $
 )
 
 $
-  vec(x,y,z) = A x + b = mat(0, 1; 0, 0; 0, -1) vec(r, c) + vec(0,cal(l)-1,-cal(l))
+  vec(x,y,z) = A x + b = mat(0, 1; 0, 0; 1, 0) vec(r, c) + vec(-cal(l),cal(l)-1,0)
 $
 
 === Left
@@ -393,7 +393,7 @@ $
 )
 
 $
-  vec(x,y,z) = A x + b = mat(0,0;0,-1;-1,0) vec(r, c) + vec(0,0,3cal(l)-1)
+  vec(x,y,z) = A x + b = mat(0,0;0,-1;-1,0) vec(r, c) + vec(0,cal(l)-1,3cal(l)-1)
 $
 
 === Front
@@ -408,7 +408,7 @@ $
 )
 
 $
-  vec(x,y,z) = A x + b = mat() vec(r, c) + vec()
+  vec(x,y,z) = A x + b = mat(0, 1; -1, 0; 0, 0) vec(r, c) + vec(-cal(l),2cal(l)-1,cal(l)-1)
 $
 
 // #colbreak()
@@ -418,14 +418,14 @@ $
 #table(
   columns: 2,
   table.header($(r,c)$, $(x,y,z)$),
-  $()$, $()$,
-  $()$, $()$,
-  $()$, $()$,
-  $()$, $()$
+  $(0,8)$, $(3,3,0)$,
+  $(0,11)$, $(3,0,0)$,
+  $(3,8)$, $(3,3,3)$,
+  $(3,11)$, $(3,0,3)$
 )
 
 $
-  vec(x,y,z) = A x + b = mat() vec(r, c) + vec()
+  vec(x,y,z) = A x + b = mat(0,0;0,-1;1,0) vec(r, c) + vec(cal(l-1),3cal(l)-1,0)
 $
 
 === Under
@@ -433,10 +433,10 @@ $
 #table(
   columns: 2,
   table.header($(r,c)$, $(x,y,z)$),
-  $()$, $()$,
-  $()$, $()$,
-  $()$, $()$,
-  $()$, $()$
+  $(8,4)$, $(0,0,3)$,
+  $(11,4)$, $(0,0,0)$,
+  $(8,7)$, $(3,0,3)$,
+  $(11,7)$, $(3,0,0)$
 )
 
 $
@@ -448,14 +448,14 @@ $
 #table(
   columns: 2,
   table.header($(r,c)$, $(x,y,z)$),
-  $()$, $()$,
-  $()$, $()$,
-  $()$, $()$,
-  $()$, $()$
+  $(12,0)$, $(0,3,0)$,
+  $(12,3)$, $(0,0,0)$,
+  $(15,0)$, $(3,3,0)$,
+  $(15,3)$, $(3,0,0)$
 )
 
 $
-  vec(x,y,z) = A x + b = mat() vec(r, c) + vec()
+  vec(x,y,z) = A x + b = mat(1,0;0,-1;0,0) vec(r, c) + vec(-3cal(l),cal(l)-1,0)
 $
 
 ]
