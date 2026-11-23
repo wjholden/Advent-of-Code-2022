@@ -27,7 +27,7 @@ This year: Go!
 21. `##` evaluation graphs, directed acyclic graphs, bisection, differentiability
 22. `##` procedural programming, circular array references, grids, 3D grids, linear transformations, **unexpectedly hard**, hardcoded approaches where the general solution is difficult or impossible
 23. `##` procedural programming, out-of-order switch cases, automata, idempotence
-24. `  `
+24. `##` BFS in a changing environment
 25. `  `
 
 # Lessons Learned
