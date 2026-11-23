@@ -28,7 +28,7 @@ This year: Go!
 22. `##` procedural programming, circular array references, grids, 3D grids, linear transformations, **unexpectedly hard**, hardcoded approaches where the general solution is difficult or impossible
 23. `##` procedural programming, out-of-order switch cases, automata, idempotence
 24. `##` BFS in a changing environment
-25. `  `
+25. `##` Roman numerals
 
 # Lessons Learned
 * Go is a really low-level language and does not provide batteries for things like `sum()` and `Set()`.
